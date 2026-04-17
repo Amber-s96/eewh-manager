@@ -345,7 +345,7 @@ export default function MyWorkspacePage() {
                       tickCount={4}
                     />
                     <Radar dataKey="value" stroke="#5c7a5c" fill="#5c7a5c" fillOpacity={0.35} strokeWidth={2} />
-                    <Tooltip formatter={(v: number) => [`${v} 項`, '完成數']} contentStyle={{ fontSize: 12, borderColor: '#c2d9c2' }} />
+                    <Tooltip formatter={(v) => [`${v} 項`, '完成數']} contentStyle={{ fontSize: 12, borderColor: '#c2d9c2' }} />
                   </RadarChart>
                 </ResponsiveContainer>
               )}

@@ -190,7 +190,7 @@ export default function ReportsPage() {
                     <Cell key={entry.name} fill={STAGE_COLORS[entry.name] ?? '#a8c5a8'} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(v: number) => [`${v} 件`, '案件數']} contentStyle={{ fontSize: 12 }} />
+                <Tooltip formatter={(v) => [`${v} 件`, '案件數']} contentStyle={{ fontSize: 12 }} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
               </PieChart>
             </ResponsiveContainer>
