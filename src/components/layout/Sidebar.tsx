@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom'
 const NAV = [
   { to: '/',        label: '案件總覽',   icon: '🗂️' },
   { to: '/my',      label: '個人工作區', icon: '👤' },
-  { to: '/bers',    label: '前期評估',   icon: '📊' },
+  { to: '/tools',   label: '工具區',     icon: '🔧' },
   { to: '/reports', label: '報表區',     icon: '📈' },
   { to: '/public',  label: '外部聯繫',   icon: '🔗' },
 ]

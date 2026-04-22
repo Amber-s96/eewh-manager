@@ -1,9 +1,11 @@
+import { useState } from 'react'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   PieChart, Pie, Cell, Legend, ResponsiveContainer,
 } from 'recharts'
 import { useProjectStore } from '../store/projectStore'
 import ProjectStageGantt from '../components/ProjectStageGantt'
+import { exportPDF, exportExcel } from '../utils/export-utils'
 import type { Project } from '../types'
 
 const STAGES = ['前期評估', '圖說蒐集', '計算檢討', '圖說修改', '產製報告書', '待審查', '候選結案'] as const
@@ -53,6 +55,18 @@ function projectStats(p: Project) {
 
 export default function ReportsPage() {
   const { projects } = useProjectStore()
+  const [exporting, setExporting] = useState<'pdf' | 'excel' | null>(null)
+
+  async function handleExport(type: 'pdf' | 'excel') {
+    setExporting(type)
+    await new Promise(r => setTimeout(r, 50)) // 讓 spinner 先渲染
+    try {
+      if (type === 'pdf')   exportPDF(projects)
+      else                  exportExcel(projects)
+    } finally {
+      setExporting(null)
+    }
+  }
 
   // 整體統計
   const allTasks   = projects.flatMap(p => p.tasks)
@@ -76,9 +90,27 @@ export default function ReportsPage() {
   return (
     <div className="p-6 space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-xl font-semibold text-primary-800">報表區</h1>
-        <p className="text-sm text-primary-500 mt-0.5">以專案為主軸的進度報告</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-semibold text-primary-800">報表區</h1>
+          <p className="text-sm text-primary-500 mt-0.5">以專案為主軸的進度報告</p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleExport('excel')}
+            disabled={exporting !== null}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border border-primary-200 text-primary-600 hover:bg-primary-50 disabled:opacity-50 transition-colors"
+          >
+            {exporting === 'excel' ? '⏳' : '📊'} 匯出 Excel
+          </button>
+          <button
+            onClick={() => handleExport('pdf')}
+            disabled={exporting !== null}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-50 transition-colors"
+          >
+            {exporting === 'pdf' ? '⏳' : '📄'} 匯出 PDF
+          </button>
+        </div>
       </div>
 
       {/* 全局摘要卡片 */}

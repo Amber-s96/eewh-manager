@@ -41,7 +41,10 @@
 頂部 Tab（主要功能）
 ├── 案件總覽      /
 ├── 個人工作區    /my
-├── 前期評估      /bers
+├── 工具區        /tools（Phase 2）
+│   ├── 初期評估  /tools/screening
+│   ├── 低碳計算  /tools/carbon
+│   └── BERS計算  /tools/bers
 ├── 報表區        /reports（Phase 2）
 └── 外部聯繫      /public（Phase 2）
 ```
@@ -78,12 +81,26 @@
 
 | 狀態 | 顏色 | 條件 |
 |---|---|---|
-| 進行中（卡點） | `primary-700`（最深）| effectiveActiveIndex |
+| 目前進行階段 | `primary-700`（最深）| i === stageIndex（永遠固定為 project.stage）|
 | 尚未到達 | `primary-50`（最淺）| i > stageIndex |
-| 子任務全部完成 | `primary-400`（中深）| total > 0 && done === total |
+| 過去階段有未完成任務 | `amber-50`（橘黃警示）⚠️ | i < stageIndex && done < total |
+| 子任務全部完成 | `primary-400`（中深）✓ | i < stageIndex && done === total |
 | 已到達但無任務 | `primary-100`（淺）| 其餘 |
 
-### 3. 前期評估 — BERSn 計算（已完成）
+### 3. 工具區（Phase 2）
+
+獨立工具頁面，供顧問工程師進行各類計算評估，與案件管理系統並列但功能獨立。
+
+#### 3-1. 初期評估（待開發）
+- 快速判斷案件可達到的綠建築等級範圍
+- 輸入基本建案條件，輸出九大指標初估難易度
+- 尚待釐清規格，後續由業主端需求補充
+
+#### 3-2. 低碳計算（待開發）
+- CO₂ 減量指標相關計算工具
+- 尚待釐清規格，後續補充
+
+#### 3-3. BERS 計算（待開發，已有計算引擎草稿）
 
 依據台灣綠建築 EEWH 日常節能指標（BERSn計算.xlsx）實作計算引擎：
 
@@ -164,20 +181,26 @@ interface Task {
 - [x] 案件總覽 — Table View + Board View + 篩選
 - [x] 個別案件頁 — 進行階段色塊（含完成度邏輯）
 - [x] 子任務 — 新增 / 編輯 / 刪除 / 截止日期 / 備註
-- [x] 前期評估 — BERSn 計算引擎（含空間類型查找表）
 - [x] 測試資料植入（五個案件、六位成員）
+- [x] BERSn 計算引擎草稿（含空間類型查找表，暫置，待移入工具區）
 
-### Phase 2 — 核心功能（待開發）
-- [ ] 個人工作區 — 待辦清單 + 計時器 + 戰績結算
-- [ ] 甘特圖（依子任務截止日期自動產生）
-- [ ] 外部查詢頁面（無需登入）
-- [ ] Supabase 雲端同步 + 認證（可選）
+### Phase 2 — 核心功能（已完成）
+- [x] 個人工作區 — 待辦清單 + 計時器 + 戰績結算
+- [x] 甘特圖（依子任務截止日期自動產生）
+- [x] 外部查詢頁面（無需登入）
+- [x] 報表區視覺化（Recharts 圓餅圖 / 柱狀圖 / 甘特圖）
+- [x] 工具區入口頁（/tools）— 三個計算工具卡片導覽
+- [x] 工具區 — BERS計算（整合現有計算引擎，路由 /tools/bers）
+- [ ] 工具區 — 初期評估（/tools/screening，規格待補充）
+- [ ] 工具區 — 低碳計算（/tools/carbon，規格待補充）
+- [ ] Supabase 雲端同步 + 認證（可選，Phase 3 評估）
 
-### Phase 3 — 進階功能（待開發）
-- [ ] 報表區視覺化（Recharts）
-- [ ] PDF / Excel 匯出（jsPDF + SheetJS）
-- [ ] 郵件通知（Supabase Edge Functions）
-- [ ] PWA 支援（離線可用）
+### Phase 3 — 進階功能
+- [x] 報表區視覺化（Recharts 圓餅圖 / 柱狀圖 / 甘特圖）
+- [x] PDF 匯出（jsPDF + jspdf-autotable）— 報表頁匯出含封面摘要 + 各案子任務明細
+- [x] Excel 匯出（SheetJS）— 三個工作表：專案總覽 / 子任務明細 / 階段統計
+- [x] PWA 支援（vite-plugin-pwa）— 可安裝至桌面 / 手機，離線快取靜態資源
+- [ ] 郵件通知（Supabase Edge Functions）— 待 Supabase 遷移後再實作
 
 ---
 
@@ -186,6 +209,6 @@ interface Task {
 | 決策 | 選擇 | 原因 |
 |---|---|---|
 | 進度計算方式 | 純 checkbox，不用拖曳 | 避免人工操作誤差 |
-| 階段「進行中」判斷 | 從 project.stage 往回掃描，遇完成階段停止 | 已完成的階段作為屏障，避免顯示誤判 |
+| 階段「進行中」判斷 | 深色固定 = project.stage；過去階段有殘留任務顯示橘黃 ⚠️ | 移除複雜掃描邏輯，視覺語義清楚：深色=現在、橘=警示、綠=完成 |
 | 資料持久化 | LocalStorage（Phase 1）→ Supabase（Phase 2） | Storage Adapter Pattern，切換時不改業務邏輯 |
 | BERS 計算 | 靜態查找表 + 純前端計算 | 無需後端，離線可用 |

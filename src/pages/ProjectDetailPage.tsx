@@ -58,15 +58,6 @@ export default function ProjectDetailPage() {
 
   const stageIndex = STAGES.indexOf(project.stage)
 
-  const effectiveActiveIndex = (() => {
-    for (let i = stageIndex; i >= 0; i--) {
-      const { total, done } = getStageCompletion(project.tasks, STAGES[i])
-      if (total > 0 && done < total)   return i
-      if (total > 0 && done === total) return stageIndex
-    }
-    return stageIndex
-  })()
-
   function handleAddTask() {
     if (!newTaskTitle.trim()) return
     const task: Task = {
@@ -157,15 +148,14 @@ export default function ProjectDetailPage() {
         <div className="flex gap-2 flex-wrap">
           {STAGES.map((s, i) => {
             const { total, done, pct } = getStageCompletion(project.tasks, s)
-            const isCompleted = total > 0 && done === total
-            const isActive    = i === effectiveActiveIndex
-            const isFuture    = i > stageIndex
+            const isActive  = i === stageIndex
+            const isFuture  = i > stageIndex
+            const isAllDone = total > 0 && done === total
 
             let blockStyle = ''
-            if (isActive)         blockStyle = 'bg-primary-700 text-white border-primary-700'
-            else if (isFuture)    blockStyle = 'bg-primary-50 text-primary-300 border border-primary-100'
-            else if (isCompleted) blockStyle = 'bg-primary-400 text-white border-primary-400'
-            else                  blockStyle = 'bg-primary-100 text-primary-500 border-primary-100'
+            if (isFuture)      blockStyle = 'bg-primary-50 text-primary-300 border-primary-100'
+            else if (isAllDone) blockStyle = 'bg-primary-400 text-white border-primary-400'
+            else               blockStyle = 'bg-primary-100 text-primary-600 border-primary-200'
 
             return (
               <button
@@ -175,11 +165,11 @@ export default function ProjectDetailPage() {
                   setActiveStageFilter(next)
                   if (next !== '全部') setNewTaskStage(next as StageType)
                 }}
-                className={`relative px-4 pt-2 pb-3 rounded-lg text-sm font-medium transition-all min-w-[100px] text-left border ${blockStyle} ${activeStageFilter === s ? 'ring-2 ring-primary-400 ring-offset-1' : ''}`}
+                className={`relative px-4 pt-2 pb-3 rounded-lg text-sm font-medium transition-all min-w-[100px] text-left border ${blockStyle} ${isActive ? 'ring-2 ring-primary-500 ring-offset-2' : activeStageFilter === s ? 'ring-2 ring-primary-400 ring-offset-1' : ''}`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <span>{s}</span>
-                  {isCompleted && <span className="text-xs">✓</span>}
+                  {isAllDone && <span className="text-xs">✓</span>}
                 </div>
                 {total > 0 ? (
                   <div className="mt-1.5">

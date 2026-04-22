@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { calculateBers } from '../utils/bers-calculator'
+import BackButton from '../components/BackButton'
 import { SPACE_TYPES, SPACE_TYPE_CATEGORIES } from '../constants/bers-space-types'
 import { BUILDING_CODES } from '../constants/bers-tables'
 import type { BersInput, BersResult, ClimateZone, AcMode, SpaceInput } from '../types'
@@ -49,7 +50,8 @@ export default function BersPage() {
 
   return (
     <div className="p-6 max-w-4xl">
-      <h1 className="text-xl font-semibold text-primary-800 mb-1">前期評估 — BERSn 日常節能計算</h1>
+      <BackButton to="/tools" label="返回工具區" />
+      <h1 className="text-xl font-semibold text-primary-800 mb-1">BERS 計算 — BERSn 日常節能</h1>
       <p className="text-sm text-primary-400 mb-6">依據台灣綠建築 EEWH 日常節能指標自動計算 EUI* 與評分</p>
 
       <div className="grid grid-cols-2 gap-4 mb-6">
